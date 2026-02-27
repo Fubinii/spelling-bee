@@ -12,9 +12,9 @@ def load_wordlist(default_wordlist):
 def display_letters(letters, center_letter, score, total_score):
     letters = letters.replace(center_letter, '')
     # Honeycomb display for 7 letters
-    if len(letters) == 7:
+    if len(letters)+1 == 7:
         letters = letters[:3] + center_letter + letters[3:]
-        print(' ', letters[1].upper(), letters[2].upper(), '  |')
+        print(' ', letters[0].upper(), letters[1].upper(), '  |')
         print(letters[2].upper(), '('+letters[3].upper()+')', letters[4].upper(), '|', end=' ')
         print(f'Score: {score} / {total_score}') # To do: turn this into ranks
         print(' ', letters[5].upper(), letters[6].upper(), '  |')
@@ -97,7 +97,7 @@ def active_game(default_wordlist):
         user_input = input().lower()
 
         #=== COMANDS ===
-        if user_input.lower() == "!help":
+        if user_input == "!help":
             print("!count - Show the number of valid words remaining")
             print("!exit - Exit current game")
             print("!found - Show already found words")
@@ -107,15 +107,15 @@ def active_game(default_wordlist):
             print("!reveal, !end - Reveal all valid words (ends the game)")
             print("!shuffle - Shuffle the letters")
             
-        elif user_input.lower() == "!count":
+        elif user_input == "!count":
             print(f"You found {len(found_words)} out of {len(valid_words)} possible words.")
 
-        elif user_input.lower() == "!exit":
+        elif user_input == "!exit":
             break
 
-        elif user_input.lower() == "!found":
+        elif user_input == "!found":
             print("Found words:")
-            for word in found_words:
+            for word in sorted(found_words):
                 if word in pangrams:
                     print(word.upper(), end=", ")
                 else:
@@ -123,21 +123,25 @@ def active_game(default_wordlist):
             print()
 
         # === HINT SECTION ===
-        elif user_input.lower() == "!hints":
+        elif user_input == "!hints":
             print("!pangrams - Show how many pangrams there are. More hints will soon follow!")
         
-        elif user_input.lower() == "!pangrams":
+        elif user_input == "!pangrams":
             print(f"There are {len(pangrams)} possible pangrams with these letters.")
         # ====================
 
-        elif user_input.lower() == "!ranks": 
+        elif user_input == "!ranks": 
             print("Ranks will come in an upcoming version!")
 
-        elif user_input.lower() == "!reveal" or user_input.lower() == "!end":
+        elif user_input == "!reveal" or user_input == "!end":
             print(f"Revealed at {score} / {total_score} points. Valid words were:")
             for word in valid_words:
-                if word in found_words:
+                if word in found_words and word in pangrams:
                     print('✓ ', word.upper())
+                elif word in found_words:
+                    print('✓ ', word)
+                elif word in pangrams:
+                    print(word.upper())
                 else:
                     print(word)
             break
