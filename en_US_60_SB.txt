@@ -14716,10 +14716,6 @@ cooling
 coolly
 coolness
 cools
-coon
-coons
-coonskin
-coonskins
 coop
 cooped
 cooper
@@ -16399,8 +16395,6 @@ cunning
 cunninger
 cunningest
 cunningly
-cunt
-cunts
 cup
 cupboard
 cupboards
@@ -71259,6 +71253,7 @@ toolkit
 toolmaker
 toolmakers
 tools
+toon
 toot
 tooted
 tooter

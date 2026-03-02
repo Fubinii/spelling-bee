@@ -63,6 +63,10 @@ def active_game(default_words):
             break
         else:
             letters = ''.join(dict.fromkeys(start))
+            print('Available letters:', end=' ')
+            for letter in letters:
+                print(letter.upper(), end=' ')
+            print()
             print("Chose a center letter:") 
             center_invalid = True
             while center_invalid:
@@ -135,7 +139,8 @@ def active_game(default_words):
         # ====================
 
         elif user_input == "!ranks": 
-            print("Ranks will come in an upcoming version!")
+            for t, r in ranks.items():
+                print(f"{r}: {t} points")
 
         elif user_input == "!reveal" or user_input == "!end":
             print(f"Revealed at {score} / {total_score} points. Valid words were:")
