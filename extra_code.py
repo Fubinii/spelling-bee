@@ -8,16 +8,16 @@ def load_words(default_words):
 
 def create_wordlist(letters, center_letter, words):
     # Initialize word list
-    valid_words = []
-    pangrams = []
+    valid_words = set()
+    pangrams = set()
     for word in words:
         if len(word) >= 4 and center_letter in word and all(char in letters for char in word):
-            valid_words.append(word)
+            valid_words.add(word)
             if all(char in word for char in letters): 
-                pangrams.append(word)
+                pangrams.add(word)
     
     return valid_words, pangrams
-
+    
 def provide_start(words):
     found_letters = False
 
@@ -54,7 +54,11 @@ def provide_start(words):
 
     return letters_string, center_letter, valid_words, pangrams
 
-
+def word_score(word, pangrams):
+    score = 1 if len(word) == 4 else len(word)
+    if word in pangrams:
+        score += 7
+    return score
 
 # Testing section
 # def load_wordlist(default_wordlist):

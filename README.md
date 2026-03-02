@@ -17,8 +17,9 @@ To start the game you can either enter your own word or combination of letters, 
 ---
 
 To do:
-- Implement ranking system as in NYT
-- Graphical interface
+- Turn main game into object
 - Clean up code
+- End Game: Graphical interface
+
 
 

@@ -1,43 +1,10 @@
 import random
 import math
 from time import sleep
-from extra_code import load_words, create_wordlist, provide_start
+from extra_code import load_words, create_wordlist, provide_start, word_score
+from display import display_letters
 
 default_words = 'en_US_60_SB.txt'
-
-def display_letters(letters, center_letter, score, total_score, current_rank, show_score=True, show_ranks=True):
-    letters = letters.replace(center_letter, '')
-    # Honeycomb display for 7 letters
-    if len(letters)+1 == 7:
-        letters = letters[:3] + center_letter + letters[3:]
-        print(' ', letters[0].upper(), letters[1].upper(), '  |', end=' ')
-        if show_ranks:
-            print('Rank:', current_rank)
-        else:
-            print()
-        print(letters[2].upper(), '('+letters[3].upper()+')', letters[4].upper(), '|', end=' ')
-        if show_score: 
-            print(f'Score: {score} / {total_score}') # To do: turn this into ranks
-        else:
-            print()
-        print(' ', letters[5].upper(), letters[6].upper(), '  |')
-    
-    else:
-        letters = center_letter + letters
-        n = math.ceil(math.sqrt(len(letters)))
-        for i, letter in enumerate(letters):
-            if i%n == 0 and i != 0: 
-                print()
-                print('', end=' ')
-            if letter != center_letter:
-                print(letter.upper(), end=" ")
-            else: 
-                print('(' + letter.upper() + ')', end="")
-            
-        print()
-        print(f'Score: {score} / {total_score}') # To do: turn this into ranks
-        return None
-    
 
 def active_game(default_words):
     use_honey = False # Default for displaying letters
@@ -59,7 +26,7 @@ def active_game(default_words):
         elif start == "!generate":
             letters, center_letter, valid_words, pangrams = provide_start(words)
             print('Available letters:')
-            display_letters(letters, center_letter, 0, 0, None, show_score=False, show_ranks=False)
+            display_letters(letters, center_letter, 0, None, show_score=False, show_ranks=False)
             break
         else:
             letters = ''.join(dict.fromkeys(start))
@@ -80,30 +47,25 @@ def active_game(default_words):
     valid_words, pangrams = create_wordlist(letters, center_letter, words)
 
     # Determine score
-    total_score = 0 
-    for word in valid_words:
-        if len(word) == 4:
-            total_score += 1
-        else:
-            total_score += len(word) 
-            if word in pangrams: total_score += 7 # Bonus points for pangrams
+    total_score = sum(word_score(word, pangrams) for word in valid_words)
+    
 
     print('Total points achievable:', total_score, 'including', len(pangrams), 'pangrams.')
-    ranks = {
-        math.floor(0.02*total_score): 'Good Start',
-        math.floor(0.08*total_score): 'Good',
-        math.floor(0.15*total_score): 'Solid',
-        math.floor(0.25*total_score): 'Nice',
-        math.floor(0.4*total_score): 'Great',
-        math.floor(0.5*total_score): 'Amazing',
-        math.floor(0.7*total_score): 'Genius',
-        total_score: 'Queen Bee'
-    }
+    ranks = [
+        (math.floor(0.05*total_score), 'Moving Up'),
+        (math.floor(0.08*total_score), 'Good'),
+        (math.floor(0.15*total_score), 'Solid'),
+        (math.floor(0.25*total_score), 'Nice'),
+        (math.floor(0.4*total_score), 'Great'),
+        (math.floor(0.5*total_score), 'Amazing'),
+        (math.floor(0.7*total_score), 'Genius'),
+        (total_score, 'Queen Bee')
+    ]
     current_rank = 'Beginner'
 
     print('Start by typing a word. (For a list of commands type !help)')
     # Game loop
-    found_words = []
+    found_words = set()
     score = 0
     while True:
         user_input = input().lower()
@@ -163,21 +125,16 @@ def active_game(default_words):
         # === REGULAR GAME ===
         else:
             if user_input in valid_words and user_input not in found_words:
-                found_words.append(user_input)
-                score += 1 if len(user_input) == 4 else len(user_input)
+                found_words.add(user_input)
+                score += word_score(user_input, pangrams)
                 if user_input in pangrams:
                     print("*** PANGRAM! ***")
-                    score += 7
-
                 else:
                     print("Good!")
 
                 # Rank update    
-                for t, r in ranks.items():
-                    if score >=  t:
-                        current_rank = r
-                    elif score < t:
-                        break
+                current_rank = next(
+                (r for t, r in reversed(ranks) if score >= t), 'Beginner')
 
             elif user_input in found_words:
                 print("Already found.")
@@ -185,7 +142,7 @@ def active_game(default_words):
                 print("Not in word list.")
         
         sleep(0.5) 
-        display_letters(letters, center_letter, score, total_score, current_rank) 
+        display_letters(letters, center_letter, score, current_rank) 
 
         
 while True:
