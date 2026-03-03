@@ -51,6 +51,7 @@ def active_game(default_words):
     
 
     print('Total points achievable:', total_score, 'including', len(pangrams), 'pangrams.')
+
     ranks = [
         (math.floor(0.05*total_score), 'Moving Up'),
         (math.floor(0.08*total_score), 'Good'),
@@ -152,5 +153,4 @@ while True:
     print("New game? (y/n)")
     if input().lower() != 'y':
         break
-
 
