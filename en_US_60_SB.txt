@@ -29123,6 +29123,7 @@ giftedness
 gifting
 gifts
 gig
+giga
 gigabit
 gigabits
 gigabyte
