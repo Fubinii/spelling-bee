@@ -6,6 +6,19 @@ from display import display_letters
 
 default_words = 'en_US_60_SB.txt'
 
+class SpellingBeeGame:
+    def __init__(self, default_words):
+        self.words = load_words(default_words)
+        self.letters = None
+        self.center_letter = None
+        self.valid_words = None
+        self.pangrams = None
+        self.total_score = 0
+        self.score = 0
+        self.current_rank = 'Beginner'
+
+    
+
 def active_game(default_words):
     use_honey = False # Default for displaying letters
     words = load_words(default_words)

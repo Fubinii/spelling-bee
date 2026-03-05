@@ -68,60 +68,85 @@ def active_game(default_words):
     # Game loop
     found_words = set()
     score = 0
+
+    # Creating Command dispatch
+    def command_help():
+        print("!exit - Exit current game")
+        print("!found - Show already found words")
+        print("!hints - Show available hint commands")
+        print("!pangrams - Show how many pangrams there are")
+        print("!ranks - Show the points needed for each rank")
+        print("!reveal, !end - Reveal all valid words (ends the game)")
+        print("!shuffle - Shuffle the letters")
+
+        return None
+    
+    def command_exit():
+        return 'break'
+    
+    def command_found(found_words, pangrams):
+        print("Found words:")
+        for word in sorted(found_words):
+            if word in pangrams:
+                print(word.upper(), end=", ")
+            else:
+                print(word, end=", ")
+        print()
+        return None
+    
+    def command_hints():
+        print("!pangrams - Show how many pangrams there are. More hints will soon follow!")
+        return None
+    
+    def command_pangrams(pangrams):
+        print(f"There are {len(pangrams)} possible pangrams with these letters.")
+        return None
+    
+    def command_ranks(ranks):
+        for t, r in ranks:
+            print(f"{r}: {t} points")
+        return None
+    
+    def command_reveal(score, total_score, valid_words, found_words, pangrams):
+        print(f"Revealed at {score} / {total_score} points. Valid words were:")
+        for word in valid_words:
+            if word in found_words and word in pangrams:
+                print('✓ ', word.upper())
+            elif word in found_words:
+                print('✓ ', word)
+            elif word in pangrams:
+                print(word.upper())
+            else:
+                print(word)
+        return 'break'
+    
+    def command_shuffle(letters):
+        l = list(letters)
+        random.shuffle(l)
+        return ''.join(l)
+    
+    handle_command = {
+        "!help": lambda: command_help(),
+        "!exit": lambda: command_exit(),
+        "!found": lambda: command_found(found_words, pangrams),
+        "!hints": lambda: command_hints(),
+        "!pangrams": lambda: command_pangrams(pangrams),
+        "!ranks": lambda: command_ranks(ranks),
+        "!reveal": lambda: command_reveal(score, total_score, valid_words, found_words, pangrams),
+        "!end": lambda: command_reveal(score, total_score, valid_words, found_words, pangrams),
+        "!shuffle": lambda: command_shuffle(letters)
+    }
+            
     while True:
         user_input = input().lower()
 
-        #=== COMANDS ===
-        if user_input == "!help":
-            print("!exit - Exit current game")
-            print("!found - Show already found words")
-            print("!hints - Show available hint commands")
-            print("!pangrams - Show how many pangrams there are")
-            print("!ranks - Show the points needed for each rank")
-            print("!reveal, !end - Reveal all valid words (ends the game)")
-            print("!shuffle - Shuffle the letters")
-            
-        elif user_input == "!exit":
-            break
-
-        elif user_input == "!found":
-            print("Found words:")
-            for word in sorted(found_words):
-                if word in pangrams:
-                    print(word.upper(), end=", ")
-                else:
-                    print(word, end=", ")
-            print()
-
-        # === HINT SECTION ===
-        elif user_input == "!hints":
-            print("!pangrams - Show how many pangrams there are. More hints will soon follow!")
-        
-        elif user_input == "!pangrams":
-            print(f"There are {len(pangrams)} possible pangrams with these letters.")
-        # ====================
-
-        elif user_input == "!ranks": 
-            for t, r in ranks.items():
-                print(f"{r}: {t} points")
-
-        elif user_input == "!reveal" or user_input == "!end":
-            print(f"Revealed at {score} / {total_score} points. Valid words were:")
-            for word in valid_words:
-                if word in found_words and word in pangrams:
-                    print('✓ ', word.upper())
-                elif word in found_words:
-                    print('✓ ', word)
-                elif word in pangrams:
-                    print(word.upper())
-                else:
-                    print(word)
-            break
-
-        elif user_input.lower() == "!shuffle":
-            l = list(letters)
-            random.shuffle(l)
-            letters = ''.join(l)
+        command = handle_command.get(user_input)
+        if command:
+            result = command()
+            if result == 'break':
+                break
+            elif user_input == "!shuffle":
+                letters = result
 
         # === REGULAR GAME ===
         else:
