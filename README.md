@@ -1,4 +1,4 @@
-# spelling-bee
+# spelling-beer
 <center>
 <img src="images/spelling-bee_crop.png" alt="spelling bee" width="150"/>
 </center>
