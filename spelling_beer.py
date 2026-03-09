@@ -6,6 +6,10 @@ from display import display_letters
 
 default_words = 'en_US_60_SB.txt'
 
+# c_letter:     center letter
+# o_letters:    outer letters (without the center letter)
+# letters:      all letters
+
 def active_game(default_words):
     use_honey = False # Default for displaying letters
     words = load_words(default_words)
@@ -24,9 +28,7 @@ def active_game(default_words):
             except FileNotFoundError:
                 print("File not found. Using default word list.")
         elif start == "!generate":
-            letters, center_letter, valid_words, pangrams = provide_start(words)
-            print('Available letters:')
-            display_letters(letters, center_letter, 0, None, show_score=False, show_ranks=False)
+            o_letters, c_letter, valid_words, pangrams = provide_start(words)
             break
         else:
             letters = ''.join(dict.fromkeys(start))
@@ -37,15 +39,18 @@ def active_game(default_words):
             print("Chose a center letter:") 
             center_invalid = True
             while center_invalid:
-                center_letter = input().lower()
-                if center_letter not in letters:
+                c_letter = input().lower()
+                if c_letter not in letters:
                     print("Center letter must be one of the letters you initialized.")
                 else:
                     center_invalid = False
+            
+            o_letters = letters.replace(c_letter, '')
             break
     
-    valid_words, pangrams = create_wordlist(letters, center_letter, words)
-
+    valid_words, pangrams = create_wordlist(o_letters, c_letter, words)
+    o_letters = o_letters.upper()
+    c_letter = c_letter.upper()
     # Determine score
     total_score = sum(word_score(word, pangrams) for word in valid_words)
     
@@ -63,12 +68,13 @@ def active_game(default_words):
         (total_score, 'Queen Bee')
     ]
     current_rank = 'Beginner'
-
-    print('Start by typing a word. (For a list of commands type !help)')
-    # Game loop
     found_words = set()
     score = 0
 
+    display_letters(o_letters, c_letter, 0, current_rank)
+    print('Start by typing a word. (For a list of commands type !help)')
+
+    # Game loop
     # Creating Command dispatch
     def command_help():
         print("!exit - Exit current game")
@@ -120,8 +126,8 @@ def active_game(default_words):
                 print(word)
         return 'break'
     
-    def command_shuffle(letters):
-        l = list(letters)
+    def command_shuffle(o_letters):
+        l = list(o_letters)
         random.shuffle(l)
         return ''.join(l)
     
@@ -134,7 +140,7 @@ def active_game(default_words):
         "!ranks": lambda: command_ranks(ranks),
         "!reveal": lambda: command_reveal(score, total_score, valid_words, found_words, pangrams),
         "!end": lambda: command_reveal(score, total_score, valid_words, found_words, pangrams),
-        "!shuffle": lambda: command_shuffle(letters)
+        "!shuffle": lambda: command_shuffle(o_letters)
     }
             
     while True:
@@ -146,7 +152,7 @@ def active_game(default_words):
             if result == 'break':
                 break
             elif user_input == "!shuffle":
-                letters = result
+                o_letters = result
 
         # === REGULAR GAME ===
         else:
@@ -168,7 +174,7 @@ def active_game(default_words):
                 print("Not in word list.")
         
         sleep(0.5) 
-        display_letters(letters, center_letter, score, current_rank) 
+        display_letters(o_letters, c_letter, score, current_rank) 
 
         
 while True:
