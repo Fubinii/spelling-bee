@@ -100,6 +100,7 @@ def active_game(default_words):
         print()
         return None
     
+    # === Hints section ===
     def command_hints():
         print("!pangrams - Show how many pangrams there are. More hints will soon follow!")
         return None
