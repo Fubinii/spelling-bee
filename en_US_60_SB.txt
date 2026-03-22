@@ -55457,6 +55457,7 @@ rasps
 raspy
 raster
 rat
+ratatat
 ratatouille
 ratbag
 ratbags
@@ -59125,6 +59126,7 @@ rinse
 rinsed
 rinses
 rinsing
+rioja
 riot
 rioted
 rioter
@@ -59521,7 +59523,6 @@ rostrum
 rostrums
 rosy
 rot
-rota
 rotaries
 rotary
 rotas
@@ -59532,6 +59533,7 @@ rotating
 rotation
 rotational
 rotations
+rotator
 rotatory
 rote
 rotgut
@@ -69389,6 +69391,7 @@ tarmacked
 tarmacking
 tarmacs
 tarn
+tarnation
 tarnish
 tarnished
 tarnishes
@@ -72834,8 +72837,6 @@ twanging
 twangs
 twangy
 twas
-twat
-twats
 tweak
 tweaked
 tweaking
