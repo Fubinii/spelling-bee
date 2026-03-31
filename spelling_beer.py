@@ -1,82 +1,44 @@
 import random
 import math
 from time import sleep
-from extra_code import load_words, create_wordlist, provide_start, word_score
+from extra_code import create_wordlist, provide_start, word_score
 from display import display_letters
-
-default_words = 'en_US_60_SB.txt'
 
 # c_letter:     center letter
 # o_letters:    outer letters (without the center letter)
 # letters:      all letters
 
-def active_game(default_words):
-    use_honey = False # Default for displaying letters
-    words = load_words(default_words)
-    # Intro
-    print("SPELLING BEE(R)")
-    print("------------")
-    print("Current word list:", default_words, "To change, type !wordlist <filename>")
-    
-    while True:
-        start = input("Type in letters to initialize game or use !generate: ").lower()
-        if start.startswith("!wordlist "):
-            filename = start.split(" ", 1)[1]
-            try: 
-                words = load_words(filename)
-                print("Word list change successful!")
-            except FileNotFoundError:
-                print("File not found. Using default word list.")
-        elif start == "!generate":
-            o_letters, c_letter, valid_words, pangrams = provide_start(words)
-            break
-        else:
-            letters = ''.join(dict.fromkeys(start))
-            print('Available letters:', end=' ')
-            for letter in letters:
-                print(letter.upper(), end=' ')
-            print()
-            print("Chose a center letter:") 
-            center_invalid = True
-            while center_invalid:
-                c_letter = input().lower()
-                if c_letter not in letters:
-                    print("Center letter must be one of the letters you initialized.")
-                else:
-                    center_invalid = False
-            
-            o_letters = letters.replace(c_letter, '')
-            break
-    
-    valid_words, pangrams = create_wordlist(o_letters, c_letter, words)
-    o_letters = o_letters.upper()
-    c_letter = c_letter.upper()
-    # Determine score
-    total_score = sum(word_score(word, pangrams) for word in valid_words)
-    
+class SpellingBeerGame:
+    def __init__(self, words):
+        self.words = words
+        self.o_letters = None
+        self.c_letter = None
+        self.valid_words = set()
+        self.found_words = set()
+        self.pangrams = set()
+        self.total_score = 0
+        self.score = 0
+        self.ranks = []
+        self.current_rank = 'Beginner'
 
-    print('Total points achievable:', total_score, 'including', len(pangrams), 'pangrams.')
+        self.commands = {
+            "!help": self.command_help,
+            "!exit": self.command_exit,
+            "!found": self.command_found,
+            "!hints": self.command_hints,
+            "!pangrams": self.command_pangrams,
+            "!ranks": self.command_ranks,
+            "!reveal": self.command_reveal,
+            "!end": self.command_reveal,
+            "!shuffle": self.command_shuffle
+    }
 
-    ranks = [
-        (math.floor(0.05*total_score), 'Moving Up'),
-        (math.floor(0.08*total_score), 'Good'),
-        (math.floor(0.15*total_score), 'Solid'),
-        (math.floor(0.25*total_score), 'Nice'),
-        (math.floor(0.4*total_score), 'Great'),
-        (math.floor(0.5*total_score), 'Amazing'),
-        (math.floor(0.7*total_score), 'Genius'),
-        (total_score, 'Queen Bee')
-    ]
-    current_rank = 'Beginner'
-    found_words = set()
-    score = 0
 
-    display_letters(o_letters, c_letter, 0, current_rank)
-    print('Start by typing a word. (For a list of commands type !help)')
+    def __str__(self):
+        return f"SpellingBeerGame(center={self.c_letter}, outer={self.o_letters})"
 
-    # Game loop
-    # Creating Command dispatch
-    def command_help():
+    # === Methods: Commands ===
+    def command_help(self):
         print("!exit - Exit current game")
         print("!found - Show already found words")
         print("!hints - Show available hint commands")
@@ -85,104 +47,125 @@ def active_game(default_words):
         print("!reveal, !end - Reveal all valid words (ends the game)")
         print("!shuffle - Shuffle the letters")
 
-        return None
-    
-    def command_exit():
+    def command_exit(self):
         return 'break'
     
-    def command_found(found_words, pangrams):
+    def command_found(self):
         print("Found words:")
-        for word in sorted(found_words):
-            if word in pangrams:
+        for word in sorted(self.found_words):
+            if word in self.pangrams:
                 print(word.upper(), end=", ")
             else:
                 print(word, end=", ")
         print()
         return None
     
-    # === Hints section ===
     def command_hints():
         print("!pangrams - Show how many pangrams there are. More hints will soon follow!")
         return None
     
-    def command_pangrams(pangrams):
-        print(f"There are {len(pangrams)} possible pangrams with these letters.")
+    def command_pangrams(self):
+        print(f"There are {len(self.pangrams)} possible pangrams with these letters.")
         return None
     
-    def command_ranks(ranks):
-        for t, r in ranks:
+    def command_ranks(self):
+        for t, r in self.ranks:
             print(f"{r}: {t} points")
         return None
     
-    def command_reveal(score, total_score, valid_words, found_words, pangrams):
-        print(f"Revealed at {score} / {total_score} points. Valid words were:")
-        for word in sorted(valid_words):
-            if word in found_words and word in pangrams:
+    def command_reveal(self):
+        print(f"Revealed at {self.score} / {self.total_score} points. Valid words were:")
+        for word in sorted(self.valid_words):
+            if word in self.found_words and word in self.pangrams:
                 print('✓ ', word.upper())
-            elif word in found_words:
+            elif word in self.found_words:
                 print('✓ ', word)
-            elif word in pangrams:
+            elif word in self.pangrams:
                 print(word.upper())
             else:
                 print(word)
         return 'break'
     
-    def command_shuffle(o_letters):
-        l = list(o_letters)
+    def command_shuffle(self):
+        l = list(self.o_letters)
         random.shuffle(l)
-        return ''.join(l)
+        self.o_letters = ''.join(l)
+
     
-    handle_command = {
-        "!help": lambda: command_help(),
-        "!exit": lambda: command_exit(),
-        "!found": lambda: command_found(found_words, pangrams),
-        "!hints": lambda: command_hints(),
-        "!pangrams": lambda: command_pangrams(pangrams),
-        "!ranks": lambda: command_ranks(ranks),
-        "!reveal": lambda: command_reveal(score, total_score, valid_words, found_words, pangrams),
-        "!end": lambda: command_reveal(score, total_score, valid_words, found_words, pangrams),
-        "!shuffle": lambda: command_shuffle(o_letters)
-    }
-            
-    while True:
-        user_input = input().lower()
+    # === Methods: Initialization of the Game ===
+    def determine_score(self):
+        self.total_score = sum(word_score(word, self.pangrams) for word in self.valid_words)
+    
+    def determine_ranks(self):
+        self.ranks = [
+            (math.floor(0.05*self.total_score), 'Moving Up'),
+            (math.floor(0.08*self.total_score), 'Good'),
+            (math.floor(0.15*self.total_score), 'Solid'),
+            (math.floor(0.25*self.total_score), 'Nice'),
+            (math.floor(0.4*self.total_score), 'Great'),
+            (math.floor(0.5*self.total_score), 'Amazing'),
+            (math.floor(0.7*self.total_score), 'Genius'),
+            (self.total_score, 'Queen Bee')
+        ]
 
-        command = handle_command.get(user_input)
-        if command:
-            result = command()
-            if result == 'break':
-                break
-            elif user_input == "!shuffle":
-                o_letters = result
+    def from_generate(self):
+        self.o_letters, self.c_letter, self.valid_words, self.pangrams = provide_start(self.words)
 
-        # === REGULAR GAME ===
-        else:
-            if user_input in valid_words and user_input not in found_words:
-                found_words.add(user_input)
-                score += word_score(user_input, pangrams)
-                if user_input in pangrams:
+    def from_input(self, first_input):
+        letters = ''.join(dict.fromkeys(first_input))
+
+        print('Available letters:', end=' ')
+        for letter in letters:
+            print(letter.upper(), end=' ')
+        print()
+        print("Chose a center letter:") 
+
+        center_invalid = True
+        while center_invalid:
+            self.c_letter = input().lower()
+            if self.c_letter not in letters:
+                print("Center letter must be one of the letters you initialized.")
+            else:
+                center_invalid = False
+        
+        self.o_letters = letters.replace(self.c_letter, '')
+
+        self.valid_words, self.pangrams = create_wordlist(self.o_letters, self.c_letter, self.words)
+
+    # 
+    def play(self):
+        self.determine_score()
+        self.determine_ranks()
+        self.o_letters, self.c_letter = self.o_letters.upper(), self.c_letter.upper()
+
+        print(f'Maximum score: {self.total_score} points. Pangrams: {len(self.pangrams)}')
+        display_letters(self.o_letters, self.c_letter, 0, self.current_rank)
+        print('Start by typing a word. (For a list of commands type !help)')
+
+        while True:
+            user_input = input().lower()
+
+            if user_input in self.commands:
+                result = self.commands[user_input]()
+                if result == 'break':
+                    break
+
+            elif user_input in self.valid_words and user_input not in self.found_words:
+                self.found_words.add(user_input)
+                self.score += word_score(user_input, self.pangrams)
+                if user_input in self.pangrams:
                     print("*** PANGRAM! ***")
                 else:
                     print("Good!")
-
                 # Rank update    
                 current_rank = next(
-                (r for t, r in reversed(ranks) if score >= t), 'Beginner')
+                (r for t, r in reversed(self.ranks) if self.score >= t), 'Beginner')
 
-            elif user_input in found_words:
+            elif user_input in self.found_words:
                 print("Already found.")
             else:
-                print("Not in word list.")
-        
-        sleep(0.5) 
-        display_letters(o_letters, c_letter, score, current_rank) 
-
-        
-while True:
-
-    active_game(default_words)
-
-    print("New game? (y/n)")
-    if input().lower() != 'y':
-        break
-
+                print("Not in word list.")          
+            sleep(0.5)  
+            display_letters(self.o_letters, self.c_letter, self.score, current_rank)
+            
+    
