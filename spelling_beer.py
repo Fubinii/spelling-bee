@@ -61,7 +61,7 @@ class SpellingBeerGame:
         print()
         return None
     
-    def command_hints():
+    def command_hints(self):
         print("!pangrams - Show how many pangrams there are. More hints will soon follow!")
         return None
     
@@ -142,7 +142,6 @@ class SpellingBeerGame:
         print(f'Maximum score: {self.total_score} points. Pangrams: {len(self.pangrams)}')
         display_letters(self.o_letters, self.c_letter, 0, self.current_rank)
         print('Start by typing a word. (For a list of commands type !help)')
-
         while True:
             user_input = input().lower()
 
@@ -162,15 +161,16 @@ class SpellingBeerGame:
                 else:
                     print("Good!")
                 # Rank update    
-                current_rank = next((r for t, r in reversed(self.ranks) if self.score >= t), 'Beginner')
+                self.current_rank = next((r for t, r in reversed(self.ranks) if self.score >= t), 'Beginner')
 
             elif user_input in self.found_words:
                 print("Already found.")
             else:
                 print("Not in word list.")          
             sleep(0.5)
+            print()
             print("Last: ", end="")  
             print(", ".join(reversed(self.history)))
-            display_letters(self.o_letters, self.c_letter, self.score, current_rank)
+            display_letters(self.o_letters, self.c_letter, self.score, self.current_rank)
             
     
