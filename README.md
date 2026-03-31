@@ -15,7 +15,7 @@ Scoring:
 
 ---
 
-The default dictionary is 'en_US_60_SB.txt, which is my attempt to replicate the word list of the NYT as closely as possible. It is based on the en_US.60 SCOWL word list, removing proper nouns, special characters and inappropriate language (the last one being a work-in-progress, feedback appreciated). I compared some of the daily puzzle's solutions with these to adjust the list.
+The default dictionary is `en_US_60_SB.txt`, which is my attempt to replicate the word list of the NYT as closely as possible. It is based on the en_US.60 SCOWL word list, removing proper nouns, special characters and inappropriate language (the last one being a work-in-progress, feedback appreciated). I compared some of the daily puzzle's solutions with these to adjust the list.
 You can also use your own dictionary.
 
 ---
@@ -25,8 +25,6 @@ To start the game, you can either enter your own word or combination of letters,
 ---
 
 To do:
-- Turn main game into object
-- Clean up code
 - End Game: Graphical interface
 
 
