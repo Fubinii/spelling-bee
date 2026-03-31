@@ -15,6 +15,7 @@ class SpellingBeerGame:
         self.c_letter = None
         self.valid_words = set()
         self.found_words = set()
+        self.history = []
         self.pangrams = set()
         self.total_score = 0
         self.score = 0
@@ -152,20 +153,24 @@ class SpellingBeerGame:
 
             elif user_input in self.valid_words and user_input not in self.found_words:
                 self.found_words.add(user_input)
+                self.history.append(user_input)
+                if len(self.history) > 4: self.history.pop(0)
                 self.score += word_score(user_input, self.pangrams)
+
                 if user_input in self.pangrams:
                     print("*** PANGRAM! ***")
                 else:
                     print("Good!")
                 # Rank update    
-                current_rank = next(
-                (r for t, r in reversed(self.ranks) if self.score >= t), 'Beginner')
+                current_rank = next((r for t, r in reversed(self.ranks) if self.score >= t), 'Beginner')
 
             elif user_input in self.found_words:
                 print("Already found.")
             else:
                 print("Not in word list.")          
-            sleep(0.5)  
+            sleep(0.5)
+            print("Last: ", end="")  
+            print(", ".join(reversed(self.history)))
             display_letters(self.o_letters, self.c_letter, self.score, current_rank)
             
     
