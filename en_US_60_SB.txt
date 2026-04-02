@@ -3884,7 +3884,6 @@ attitudinize
 attitudinized
 attitudinizes
 attitudinizing
-attn
 attorney
 attorneys
 attract
@@ -5198,8 +5197,6 @@ batik
 batiks
 bating
 batiste
-batman
-batmen
 baton
 batons
 bats
@@ -37632,6 +37629,7 @@ karmic
 kart
 karts
 katakana
+katana
 katydid
 katydids
 kava
@@ -44670,6 +44668,8 @@ names
 namesake
 namesakes
 naming
+nana
+nankeen
 nannies
 nanny
 nanobot
@@ -44678,6 +44678,7 @@ nanometer
 nanometers
 nanosecond
 nanoseconds
+natant
 nanotech
 nanotechnology
 nanotube
@@ -45029,6 +45030,7 @@ nematode
 nematodes
 nemeses
 nemesis
+nene
 neoclassic
 neoclassical
 neoclassicism
@@ -69299,6 +69301,7 @@ tangos
 tangs
 tangy
 tank
+tanka
 tankard
 tankards
 tanked
