@@ -1,5 +1,6 @@
 import random
 import math
+from collections import Counter
 from time import sleep
 from extra_code import create_wordlist, provide_start, word_score
 from display import display_letters
@@ -27,6 +28,8 @@ class SpellingBeerGame:
             "!exit": self.command_exit,
             "!found": self.command_found,
             "!hints": self.command_hints,
+            "!f2": self.command_ft,
+            "!f2l": self.command_ftl,
             "!pangrams": self.command_pangrams,
             "!ranks": self.command_ranks,
             "!reveal": self.command_reveal,
@@ -38,7 +41,20 @@ class SpellingBeerGame:
     def __str__(self):
         return f"SpellingBeerGame(center={self.c_letter}, outer={self.o_letters})"
 
-    # === Methods: Commands ===
+    # === Small Helper Methods ===
+    def feedback(self, word):
+        if word in self.pangrams:
+            print("*** PANGRAM! ***")
+        elif len(word) < 5: 
+            print("Good!")
+        elif len(word) < 7:
+            print("Splendid!")
+        elif len(word) < 9:
+            print("Excellent!")
+        else:
+            print(f"A {len(word)}-letter word, Marvelous!")
+    
+    # === Commands ===
     def command_help(self):
         print("!exit - Exit current game")
         print("!found - Show already found words")
@@ -61,14 +77,38 @@ class SpellingBeerGame:
         print()
         return None
     
+    # --- Hints ---
     def command_hints(self):
-        print("!pangrams - Show how many pangrams there are. More hints will soon follow!")
+        print("!pangrams - Show how many pangrams there are.")
+        print("!f2 - List of first two letters of all valid words.")
+        print("!f2l - List of first two letters and length of each valid words.")
         return None
     
     def command_pangrams(self):
         print(f"There are {len(self.pangrams)} possible pangrams with these letters.")
         return None
     
+    def command_ft(self):
+        ft_counter = Counter()
+        for word in self.valid_words:
+            first_two = word[:2].upper()
+            ft_counter[first_two] += 1
+
+        # # Still have to decide what look nicer, this
+        # for entry, count in sorted(ft_counter.items()):
+        #     print(f"{entry}-{count}")
+
+        # Or this
+        results = [f"{entry}-{count}" for entry, count in sorted(ft_counter.items())]
+        print(", ".join(results))
+        return None   
+
+    def command_ftl(self):
+        results = [f"{word[:2].upper()}({len(word)})" for word in sorted(self.valid_words)]
+        print(", ".join(results))
+        return None
+    # ---
+
     def command_ranks(self):
         for t, r in self.ranks:
             print(f"{r}: {t} points")
@@ -93,7 +133,7 @@ class SpellingBeerGame:
         self.o_letters = ''.join(l)
 
     
-    # === Methods: Initialization of the Game ===
+    # === Initialization of the Game ===
     def determine_score(self):
         self.total_score = sum(word_score(word, self.pangrams) for word in self.valid_words)
     
@@ -133,7 +173,7 @@ class SpellingBeerGame:
 
         self.valid_words, self.pangrams = create_wordlist(self.o_letters, self.c_letter, self.words)
 
-    # 
+    #=== Active Game ===
     def play(self):
         self.determine_score()
         self.determine_ranks()
@@ -156,10 +196,8 @@ class SpellingBeerGame:
                 if len(self.history) > 4: self.history.pop(0)
                 self.score += word_score(user_input, self.pangrams)
 
-                if user_input in self.pangrams:
-                    print("*** PANGRAM! ***")
-                else:
-                    print("Good!")
+                self.feedback(user_input)
+
                 # Rank update    
                 self.current_rank = next((r for t, r in reversed(self.ranks) if self.score >= t), 'Beginner')
 

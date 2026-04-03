@@ -1,11 +1,7 @@
-import random
-import math
-from time import sleep
 from spelling_beer import SpellingBeerGame
-from extra_code import load_words, create_wordlist, provide_start, word_score
-from display import display_letters
+from extra_code import load_words
 
-default_words = 'en_US_60_SB.txt'
+default_words = 'SB_en_US.txt'
 words = load_words(default_words)
 game = SpellingBeerGame(words)
 
