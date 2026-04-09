@@ -27,6 +27,7 @@ To start the game, you can either enter your own word or combination of letters,
 To do:
 - Hint section: create toggle for personalized hints 
 - Saving Stats: all-time found words, pangrams, pangrams first and so on
+- Create Daily Puzzle that is generated from date
 - End Game: Graphical interface
 
 
