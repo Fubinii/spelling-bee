@@ -1,0 +1,7 @@
+[project]
+name = "spelling-beer"
+version = "0.1.0"
+description = "Recreation of the New York Times adaption of the Spelling Bee Puzzle."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []

@@ -3,7 +3,7 @@
 <img src="images/spelling-bee_crop.png" alt="spelling bee" width="150"/>
 </center>
 
-This is a python version of the Spelling Bee Game, adapting the setup by the New York Times puzzle. Currently, the game can be played by running the `main.py` file.
+This is a python version of the Spelling Bee Game, adapting the setup by the New York Times puzzle. Currently, the game can be played by running the `main.py` file in the spelling-beer directory. 
 
 ---
 
